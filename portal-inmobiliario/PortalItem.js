@@ -32,7 +32,7 @@ class PortalItem{
         });
         
         let itemModelsRaw = $("li", ".scroll-carousel");//.find("li");
-        let itemModels = ReadModelData(itemModelsRaw);
+        let itemModels = this.ReadModelData(itemModelsRaw);
         
         //console.log(itemModels);
 
@@ -60,7 +60,7 @@ class PortalItem{
         if(itemModelsRaw === undefined)
             return [];
         let itemModels = [];
-        
+
         itemModelsRaw.each( (i, model) => {
             
             let ModelItem = $(model);
