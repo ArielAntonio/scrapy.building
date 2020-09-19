@@ -32,7 +32,35 @@ class PortalItem{
         });
         
         let itemModelsRaw = $("li", ".scroll-carousel");//.find("li");
+        let itemModels = ReadModelData(itemModelsRaw);
+        
+        //console.log(itemModels);
+
+
+        let itemSpecs = $(".specs-container").find("li.specs-item");
+        //console.log(itemSpecs.eq(0).text())
+        let itemPhotosData = $(".gallery-content").attr("data-full-images");
+        let itemPhotoList = this.ExtractPhotoData(itemPhotosData);
+        //console.log(itemPhotosData);
+        let item = {
+            itemId : itemId,
+            itemDescription : itemDescription,
+            itemGeolocation : itemGeolocation,
+            itemPhotoList : itemPhotoList,
+            itemModelList : itemModels
+        }
+        return item;
+    }
+
+    ExtractItemData(itemSpecs){
+
+    }
+
+    ReadModelData(itemModelsRaw){
+        if(itemModelsRaw === undefined)
+            return [];
         let itemModels = [];
+        
         itemModelsRaw.each( (i, model) => {
             
             let ModelItem = $(model);
@@ -52,22 +80,7 @@ class PortalItem{
             };
             itemModels.push(itemModel);
         });
-        //console.log(itemModels);
-
-
-        let itemSpecs = $(".specs-container").find("li.specs-item");
-        // console.log(itemSpecs.eq(0).text())
-        let itemPhotosData = $(".gallery-content").attr("data-full-images");
-        let itemPhotoList = this.ExtractPhotoData(itemPhotosData);
-        //console.log(itemPhotosData);
-        let item = {
-            itemId : itemId,
-            itemDescription : itemDescription,
-            itemGeolocation : itemGeolocation,
-            itemPhotoList : itemPhotoList,
-            itemModelList : itemModels
-        }
-        return item;
+        return itemModels;
     }
 
     ExtractPhotoData(itemPhotosData){
