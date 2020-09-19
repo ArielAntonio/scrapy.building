@@ -30,26 +30,59 @@ class PortalItem{
                 //console.log("GEO: ", GeoData);
             }
         });
-        /** UNUSABLE NOT IN HTML */
-        let itemModels = $("li.ch-carousel-item");
-        //console.log(itemModels.text());
-        itemModels.each( (i, model) => {
-            model.find(".model-details-wrapper");
-            console.log("Surface: ", model.eq(0).text());
-            console.log("Rooms: ", model.eq(1).text());
-            console.log("Bathrooms: ", model.eq(2).text());
+        
+        let itemModelsRaw = $("li", ".scroll-carousel");//.find("li");
+        let itemModels = [];
+        itemModelsRaw.each( (i, model) => {
+            
+            let ModelItem = $(model);
+            
+            let modelId = ModelItem.find("img").first().attr("title");
+            let modelPhoto =  ModelItem.find("img").first().attr("src");
+            let ModelData = ModelItem.find("dd");
+            let surface = ModelData.eq(0) !== undefined ? ModelData.eq(0).text() : undefined;
+            let rooms = ModelData.eq(1) !== undefined ? ModelData.eq(1).text() : undefined;
+            let bathrooms = ModelData.eq(2) !== undefined ? ModelData.eq(2).text() : undefined;
+            let itemModel = {
+                modelId : modelId,
+                modelPhoto : modelPhoto,
+                modelSurface : surface,
+                modelRooms : rooms,
+                modelBathrooms : bathrooms
+            };
+            itemModels.push(itemModel);
         });
+        //console.log(itemModels);
 
 
         let itemSpecs = $(".specs-container").find("li.specs-item");
         // console.log(itemSpecs.eq(0).text())
-
+        let itemPhotosData = $(".gallery-content").attr("data-full-images");
+        let itemPhotoList = this.ExtractPhotoData(itemPhotosData);
+        //console.log(itemPhotosData);
         let item = {
             itemId : itemId,
             itemDescription : itemDescription,
-            itemGeolocation : itemGeolocation
+            itemGeolocation : itemGeolocation,
+            itemPhotoList : itemPhotoList,
+            itemModelList : itemModels
         }
         return item;
+    }
+
+    ExtractPhotoData(itemPhotosData){
+        if( itemPhotosData === undefined)
+            return [];
+        // Clean &quote elements
+        let itemPhotoDataClean = itemPhotosData.replace(/\&quote;/g,"\"");
+        if(itemPhotoDataClean === undefined)
+            return [];
+        let itemPhotoList = [];
+        JSON.parse(itemPhotoDataClean).forEach((imageData) => {
+            // imageData contains {src : "", h : "", w : ""}
+            itemPhotoList.push(imageData.src);
+        });
+        return itemPhotoList;
     }
 
     ExtractGeoLocation(chunkData){
