@@ -37,8 +37,8 @@ class PortalItem{
         //console.log(itemModels);
 
 
-        let itemSpecs = $(".specs-container").find("li.specs-item");
-        //console.log(itemSpecs.eq(0).text())
+        let itemSpecs = this.ExtractItemData($(".specs-container").find("li.specs-item"));
+        console.log(itemSpecs)
         let itemPhotosData = $(".gallery-content").attr("data-full-images");
         let itemPhotoList = this.ExtractPhotoData(itemPhotosData);
         //console.log(itemPhotosData);
@@ -46,14 +46,47 @@ class PortalItem{
             itemId : itemId,
             itemDescription : itemDescription,
             itemGeolocation : itemGeolocation,
+            itemSurfaceRange : itemSpecs.itemSurfaceRange,
+            itemRoomsRange : itemSpecs.itemRoomsRange,
+            itemBathroomsRange : itemSpecs.itemBathroomsRange,
+            itemStatus : itemSpecs.itemStatus,
+            itemCompletionDate : itemSpecs.itemCompletionDate,
             itemPhotoList : itemPhotoList,
-            itemModelList : itemModels
+            itemModelList : itemModels,
         }
         return item;
     }
 
     ExtractItemData(itemSpecs){
+        if(itemSpecs === undefined)
+            return undefined;
+        let specs = {};
 
+        specs.itemSurfaceRange = this.GetElementText(itemSpecs, 0, "span");
+        specs.itemRoomsRange = this.GetElementText(itemSpecs, 1, "span");
+        specs.itemBathroomsRange = this.GetElementText(itemSpecs, 2, "span");
+        specs.itemStatus = this.GetElementText(itemSpecs, 3, "span");
+        specs.itemCompletionDate = this.GetElementText(itemSpecs, 4, "span");
+
+        return specs;
+    }
+
+    GetElementText(element, index, findSelector){
+        if(element === undefined)
+            return;
+        if(index === undefined)
+            return;
+        
+        let readValue = element.eq(index);
+        if(readValue === undefined)
+            return;
+        readValue = findSelector === undefined ? readValue : readValue.find(findSelector) ;
+        if(readValue === undefined)
+            return;
+        readValue = readValue.text();
+        if(readValue === undefined)
+            return;
+        return readValue = readValue.trim();
     }
 
     ReadModelData($, itemModelsRaw){
