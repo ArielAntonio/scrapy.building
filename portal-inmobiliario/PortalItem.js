@@ -11,9 +11,13 @@ class PortalItem{
         // Found interesting photo links /noindex/images/MLC535331081?noIndex=true
         let itemDescription = $(".item-description__content ").text().trim();
         let itemId = $('[name="itemId"]').val()
+        let itemPublicationNumber = $(".item-info__id-number").text()
+        let itemReportLink = $(".item-info__denounce").children().first().attr("href");
         //console.log(itemDescription);
         let scriptsChunks = $('[type="text/javascript"]');
         let itemGeolocation = undefined;
+        let itemAddress = $(".map-address").text();
+        let itemAddressLocation = $(".map-location").text()
         scriptsChunks.each( (i, item) => {
             if(!item)
                 return;
@@ -38,21 +42,39 @@ class PortalItem{
 
 
         let itemSpecs = this.ExtractItemData($(".specs-container").find("li.specs-item"));
-        console.log(itemSpecs)
+        //console.log(itemSpecs)
         let itemPhotosData = $(".gallery-content").attr("data-full-images");
         let itemPhotoList = this.ExtractPhotoData(itemPhotosData);
+        let itemPublicationCode = $(".info",".info-property-code").text();
+        let itemPublicationDate = $(".info",".info-property-date").text();
+        let itemContractorData = {
+            contractorName : $("#real_estate_agency",".official-store-container").text(),
+            contractorLogo : $(".brand-container",".official-store-container").attr("style")
+        }
+        if(itemContractorData.contractorLogo !== undefined )
+            itemContractorData.contractorLogo = itemContractorData.contractorLogo.slice( 
+                itemContractorData.contractorLogo.indexOf("(") +1,
+                itemContractorData.contractorLogo.indexOf(")")
+            )
         //console.log(itemPhotosData);
         let item = {
             itemId : itemId,
             itemDescription : itemDescription,
             itemGeolocation : itemGeolocation,
+            itemAddress : itemAddress,
+            itemAddressLocation : itemAddressLocation,
             itemSurfaceRange : itemSpecs.itemSurfaceRange,
             itemRoomsRange : itemSpecs.itemRoomsRange,
             itemBathroomsRange : itemSpecs.itemBathroomsRange,
             itemStatus : itemSpecs.itemStatus,
             itemCompletionDate : itemSpecs.itemCompletionDate,
+            itemPublicationCode : itemPublicationCode,
+            itemPublicationDate : itemPublicationDate,
+            itemContractorData : itemContractorData,
             itemPhotoList : itemPhotoList,
             itemModelList : itemModels,
+            itemPublicationNumber : itemPublicationNumber,
+            itemReportLink : itemReportLink
         }
         return item;
     }
