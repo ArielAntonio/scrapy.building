@@ -8,11 +8,16 @@ const URL_BASE = "https://www.portalinmobiliario.com/venta/casa";
 const CACHE_FOLDER = "cache";
 const URL_REFERER = "https://www.portalinmobiliario.com/";
 const DEFAULT_WAITING_TIME = 10;
+const URL_MONGODB = "mongodb://localhost:27017/scrapy"
 
 const common = require("./Common")(fs, fetch, CACHE_FOLDER, URL_REFERER);
 const PortalResults = require("./portal-inmobiliario/PortalResults")(cheerio, common);
 const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
+/* BD Mongo */
+const USE_MONGO = true
+const Mongodb = require("./Mongo/MongoDB")(URL_MONGODB)
+/* ******** */
 
 // Get from portal inmobiliario (Venta de casas)
 (async () => {
@@ -36,6 +41,10 @@ const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
         let waitingTime = GetRandomTime(DEFAULT_WAITING_TIME);
         let pageContent = await common.getPage(PortalResults.buildingList[i].buildingUrl);
         let buildingResult = await PortalItem.ReadEntry(pageContent);
+        if(USE_MONGO){
+            /// TODO: validar si exite registro en la BD
+            await Mongodb.SaveBuilding(buildingResult);
+        }
         /// TODO: Establecer relación en lugar de añadir como hijo
         PortalResults.buildingList[i].buildingDetail = buildingResult;
         await common.delay(waitingTime);
