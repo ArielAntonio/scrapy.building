@@ -4,58 +4,38 @@ const fetch = require('node-fetch');
 
 // JSON.stringify(json, null, 4)
 
-const URL_BASE = "https://www.portalinmobiliario.com/venta/casa";
+
 const CACHE_FOLDER = "cache";
-const URL_REFERER = "https://www.portalinmobiliario.com/";
 const DEFAULT_WAITING_TIME = 10;
 const URL_MONGODB = "mongodb://localhost:27017/scrapy"
+const URL_REFERER = undefined;
 
-const common = require("./Common")(fs, fetch, CACHE_FOLDER, URL_REFERER);
+const common = require("./Common")(fs, fetch, CACHE_FOLDER, URL_REFERER, DEFAULT_WAITING_TIME, false);
 const PortalResults = require("./portal-inmobiliario/PortalResults")(cheerio, common);
 const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
 /* BD Mongo */
 const USE_MONGO = true
-const Mongodb = require("./Mongo/MongoDB")(URL_MONGODB)
+const Mongodb = {
+    enabled : USE_MONGO,
+    adapter : require("./Mongo/MongoDB")(URL_MONGODB)
+};
+
+const PortalScrapy = require("./portal-inmobiliario/PortalScrapy")(cheerio, common, Mongodb, PortalItem, PortalResults);
+
 /* ******** */
 
-// Get from portal inmobiliario (Venta de casas)
-(async () => {
-    // TODO: Añadir busqueda y parse de otro tipo de operaciones y propiedades (Arriendo / Departamento)
-    let nextUrl = URL_BASE;
-    
-    for(let i = 1; nextUrl !== undefined; i++){
-        let waitingTime = GetRandomTime(DEFAULT_WAITING_TIME);
-        let pageContent = await common.getPage(nextUrl);
-        nextUrl = await PortalResults.ReadEntry(pageContent);
-        await common.delay(waitingTime);
-        console.log("The next url (delayed) is: ", nextUrl);
-        // Solo lee la primera (para efectos de prueba)
-        break;
-        
-    }
-    console.log("Se ha encontrado un total de: %s edificios", PortalResults.buildingList.length);
-    // Test
-    for(let i = 0, l = PortalResults.buildingList.length; i < l; i++){
-        console.log("Get the detail of: ", PortalResults.buildingList[i].buildingId);
-        let waitingTime = GetRandomTime(DEFAULT_WAITING_TIME);
-        let pageContent = await common.getPage(PortalResults.buildingList[i].buildingUrl);
-        let buildingResult = await PortalItem.ReadEntry(pageContent);
-        if(USE_MONGO){
-            /// TODO: validar si exite registro en la BD
-            await Mongodb.SaveBuilding(buildingResult);
-        }
-        /// TODO: Establecer relación en lugar de añadir como hijo
-        PortalResults.buildingList[i].buildingDetail = buildingResult;
-        await common.delay(waitingTime);
-    }
-    
-    //console.log("Detalles de edificio %s, :", PortalResults.buildingList[0].buildingId, buildingResult)
+// Portal inmobiliario scrap site
+( async () => {
+  await PortalScrapy.scrap();
+  console.log("Found buildings :");
+  PortalScrapy.resultClass.buildingList.forEach((item) => {
+    console.log(item.buildingDetail);
+  });
+  
 })();
 
-function GetRandomTime( rangeValue){
-    return Math.floor((Math.random() * rangeValue) +1);
-}
+
 
 
 // TODO: Buscar en https://chilepropiedades.cl/propiedades/venta/casa/region-metropolitana(rm)/0
