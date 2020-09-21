@@ -1,5 +1,5 @@
-module.exports = (fsModule, fetchModule, cacheFolder, urlReferer) => {
-    return new Common(fsModule, fetchModule, cacheFolder, urlReferer);
+module.exports = (fsModule, fetchModule, cacheFolder, urlReferer, defaultWaitTime, enableVerbose) => {
+    return new Common(fsModule, fetchModule, cacheFolder, urlReferer, defaultWaitTime, enableVerbose);
 };
 
 /**
@@ -9,7 +9,9 @@ module.exports = (fsModule, fetchModule, cacheFolder, urlReferer) => {
  */
 class Common {
     self; 
-
+    // Default time for waiting operations.
+    DEFAULT_WAITING_TIME;
+    enableVerbose;
     /**
      * Init the common lib methods. 
      *
@@ -18,10 +20,12 @@ class Common {
      * @param {Object}   fetchModule        Fetch Node Module, required.
      * @param {string}   [cacheFolder]      Name of the cache folder, optional
      * @param {string}   [urlReferer]       Url to append to requests as referer, optional.
+     * @param {int}   [defaultWaitTime]       Default wating time (for delay), optional, default 10.
+     * @param {boolean}  [enableVerbose]    Add messages to the console on some operations
      *
      * @return {Object} New instance of Common.
      */
-    constructor ( fsModule, fetchModule, cacheFolder, urlReferer ){
+    constructor ( fsModule, fetchModule, cacheFolder, urlReferer, defaultWaitTime , enableVerbose){
         if(fsModule === undefined)
             throw Error("Filesystem module should not be null");
         if(fetchModule === undefined)
@@ -32,6 +36,7 @@ class Common {
         Common._self.cacheFolder = cacheFolder || "cache";
         Common._self.fs = fsModule;
         Common._self.fetch = fetchModule;
+        this.enableVerbose = enableVerbose !== undefined ? enableVerbose : false;
         Common._self.DEFAULT_FETCH_OPTIONS = {
             "credentials": "include",
             "headers": {
@@ -45,7 +50,8 @@ class Common {
             "method": "GET",
             "mode": "cors"
         };
-        
+        //Public
+        this.DEFAULT_WAITING_TIME = defaultWaitTime === undefined ? 10 : defaultWaitTime;
         Common._self.CACHE_TEMPLATE_URL = "#URL";
         Common._self.CACHE_TEMPALTE_STRING = `${Common._self.cacheFolder}/${Common._self.CACHE_TEMPLATE_URL}.cache.html`
     }
@@ -61,11 +67,15 @@ class Common {
      */
     readFromCache(filename){
         return new Promise( (resolve, reject) =>{
-            Common._self.fs.readFile(Common._self.getCacheFilename(filename), 'utf8', (err, filedata) => {
-                if (err) reject(err);
-                
-                resolve(filedata);
-            });
+            try{
+                Common._self.fs.readFile(Common._self.getCacheFilename(filename), 'utf8', (err, filedata) => {
+                    if (err) reject(err);
+                    resolve(filedata);
+                });
+            }
+            catch(err){
+                reject(err);
+            }
         });
     }
     
@@ -111,11 +121,13 @@ class Common {
      * @return {string} Text file content.
      */
     saveToCache(filename, fileContent){
+        let _self = this;
         return new Promise((resolve, reject) => {
             Common._self.fs.writeFile(Common._self.getCacheFilename(filename), fileContent, function(err){
                 if(err) 
                     reject(err);
-                console.log(`File successfully written! - Check your project directory for the ${filename}`);
+                if(_self.enableVerbose)
+                    console.log(`File successfully written! - Check your project directory for the ${filename}`);
                 resolve(fileContent);
             });
         });
@@ -132,7 +144,8 @@ class Common {
      * @return {string} The relative path and name of file to cache.
      */
     getCacheFilename(filename){
-        console.log("[getCacheFilename] ", Common._self.CACHE_TEMPALTE_STRING.replace(Common._self.CACHE_TEMPLATE_URL, filename) )
+        if(this.enableVerbose)
+            console.log("[getCacheFilename] ", Common._self.CACHE_TEMPALTE_STRING.replace(Common._self.CACHE_TEMPLATE_URL, filename) )
         return Common._self.CACHE_TEMPALTE_STRING.replace(Common._self.CACHE_TEMPLATE_URL, filename);
     }
     
@@ -185,11 +198,46 @@ class Common {
      */
     getPage(siteUrl){
         let siteCacheName = Common._self.urlToCachename(siteUrl);
-        console.log("Try get ", siteCacheName);
+        if(this.enableVerbose)
+            console.log("Try get ", siteCacheName);
         return Common._self.readFromCache(siteCacheName)
         .catch( (err) => {
+            if(this.enableVerbose)
             console.log(err);
             return Common._self.readFromNetwork(siteUrl);
         });
+    }
+
+    /**
+     * Get a random value on range.
+     *
+     * Simple Math.random wrapper to get a random between 1 and the provided value.
+     *
+     *
+     * @param {int}   rangeValue           Max possible value.
+     *
+     * @return {int} The random generated value.
+     */
+    getRandomTime( rangeValue){
+        if(rangeValue === undefined)
+            return 0;
+        if(rangeValue === 0)
+            return 0;
+        return Math.floor((Math.random() * rangeValue) +1);
+    }
+
+    /**
+     * Update the default fetch referer value. 
+     *
+     * Updates Common._self.DEFAULT_FETCH_OPTIONS.
+     *
+     *
+     * @param {string}   urlReferer           The new url referer.
+     *
+     */
+    setReferer(urlReferer){
+        if(urlReferer=== undefined)
+            throw new Error("urlReferer should not be undefined");
+        Common._self.DEFAULT_FETCH_OPTIONS.referrer = urlReferer;
     }
   }
