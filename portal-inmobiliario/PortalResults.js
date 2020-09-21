@@ -66,7 +66,8 @@ class PortalResults {
                 agencyName : agencyName,
                 agencyLogo : agencyLogo,
                 buildingUrlRaw : buildingUrlRaw,
-                buildingUrl : buildingUrl
+                buildingUrl : buildingUrl,
+                buildingDetail : {}
             };
     
             this.buildingList.push(building);
