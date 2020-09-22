@@ -15,8 +15,8 @@ const PortalResults = require("./portal-inmobiliario/PortalResults")(cheerio, co
 const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
 /* BD Mongo */
-const USE_MONGO = true
-const Mongodb = require("./Mongo/MongoDB")(URL_MONGODB)
+const USE_MONGO = true;
+const Mongodb = require("./Mongo/MongoDB")(URL_MONGODB);
 /* ******** */
 
 // Get from portal inmobiliario (Venta de casas)
@@ -43,7 +43,7 @@ const Mongodb = require("./Mongo/MongoDB")(URL_MONGODB)
         let buildingResult = await PortalItem.ReadEntry(pageContent);
         if(USE_MONGO){
             /// TODO: validar si exite registro en la BD
-            await Mongodb.SaveBuilding(buildingResult);
+            Mongodb.SaveBuilding(buildingResult);
         }
         /// TODO: Establecer relación en lugar de añadir como hijo
         PortalResults.buildingList[i].buildingDetail = buildingResult;

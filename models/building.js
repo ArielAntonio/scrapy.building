@@ -21,4 +21,4 @@ var buildingSchema = mongoose.Schema({
     PublicationNumber : String,
     ReportLink : String
 });
-module.exports = mongoose.model('building', buildingSchema);
+module.exports = mongoose.model('Modelbuilding', buildingSchema);
