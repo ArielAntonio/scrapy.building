@@ -63,8 +63,6 @@ class PortalScrapy {
                     if( i % this.PAGE_INFO_CHUNK == 1)
                         console.log("-- -- pages :", i);
                     nextUrl = await this.getResult(nextUrl);
-                    // TEST BREAK
-                    break;
                 }
             }
         }
