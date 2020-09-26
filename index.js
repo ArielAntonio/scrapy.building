@@ -14,7 +14,7 @@ const PortalResults = require("./portal-inmobiliario/PortalResults")(cheerio, co
 const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
 /* BD Mongo */
-const USE_MONGO = false;
+const USE_MONGO = true;
 const Mongodb = {
     enabled : USE_MONGO,
     adapter : require("./Mongo/MongoDB")(URL_MONGODB)
