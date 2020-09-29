@@ -46,11 +46,13 @@ class ChilePropiedadesResult {
             let infoSection = infoSectionOne.next();
             let priceTag = "";
             let priceType = infoSection.find(".clp-value-container").last().text().trim();
-            let priceValue = infoSection.find(".clp-value-container").first().text().trim();
+            let priceValue = infoSection.find(".clp-value-container").first().text().trim().replace(/\./g,"");
             // TODO buscar texto de contenido para detectar diferencias en detalle (a veces 2, 3 o 4)
-            let buildingSurface = infoSection.find("small").eq(0).text() + " " + infoSection.find("small").eq(1).text();
-            let buildingRooms = infoSection.find("small").eq(2).text();
-            let buildingBathRooms = infoSection.find("small").eq(3).text();
+            let detailInfoSection = infoSection.find("small");
+            let buildingSurface = this.GetSurface(detailInfoSection);
+            let buildingTotalSurface = this.GetTotalSurface(detailInfoSection);
+            let buildingRooms = this.GetRooms(detailInfoSection);
+            let buildingBathRooms = this.GetBathrooms(detailInfoSection);
 
             let agencyName = infoSection.find("img").attr("alt") || "No detectada";
             let agencyLogo = infoSection.find("img").attr("src") || "#";
@@ -67,6 +69,7 @@ class ChilePropiedadesResult {
                 priceType : priceType,
                 priceValue : priceValue,
                 buildingSurface : buildingSurface,
+                buildingTotalSurface : buildingTotalSurface,
                 buildingRooms : buildingRooms,
                 buildingBathRooms : buildingBathRooms,
                 buildingType : buildingType,
@@ -93,5 +96,49 @@ class ChilePropiedadesResult {
         
         console.log("The next one is: ", nextLink )
         return nextLink;
+    }
+
+    GetDetailSection(sectionElement, textToFind){
+        let sectionValue = "";
+        let item = {};
+        for(let i = 0; item !== undefined ;i++){
+            item = sectionElement.eq(i);
+            console.log(item);
+            if( item.length === 0){
+                item = undefined;
+                break;
+            }
+            if(item.text().indexOf(textToFind) === -1){
+                continue;
+            }
+            sectionValue = item.text().split(":")[1].trim();
+        }
+        return sectionValue;
+    }
+
+    GetTotalSurface( sections ){
+        
+        let textToFind = "Terreno";
+        let surface = this.GetDetailSection(sections, textToFind);
+        return surface;
+    }
+
+    GetSurface( sections ){
+        
+        let textToFind = "Superficie Construida";
+        let surface = this.GetDetailSection(sections, textToFind);
+        return surface;
+    }
+
+    GetRooms(sections){
+        let textToFind = "Habitaciones";
+        let rooms = this.GetDetailSection(sections, textToFind);
+        return rooms;
+    }
+
+    GetBathrooms(sections){
+        let textToFind = "Baños:";
+        let rooms = this.GetDetailSection(sections, textToFind);
+        return rooms;
     }
 }
