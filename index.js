@@ -33,9 +33,9 @@ const ChilePropiedadesScrapy = require("./chile-propiedades/ChilePropiedadesScra
     console.log("Found buildings :");
     ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
       console.log(item);
-    });
-    
-  })();
+    }); 
+  }
+)();
 
 return;
 
