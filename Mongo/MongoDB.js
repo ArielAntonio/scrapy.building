@@ -60,7 +60,7 @@ class MongoDB{
     SaveBuilding(building){
         try{
             var building = this.ParserBuilding(building);
-            building.save(function (err, book) {
+            building.save(function (err, build) {
                 if (err) return console.error(err);
                 console.log("saved collection.");
             });

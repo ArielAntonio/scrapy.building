@@ -25,7 +25,23 @@ const PortalScrapy = require("./portal-inmobiliario/PortalScrapy")(cheerio, comm
 const ChilePropiedadesResult = require("./chile-propiedades/ChilePropiedadesResult")(cheerio, common);
 const ChilePropiedadesItem = undefined;
 const ChilePropiedadesScrapy = require("./chile-propiedades/ChilePropiedadesScrapy")(cheerio, common, Mongodb, ChilePropiedadesItem, ChilePropiedadesResult);
+
+const YapoResult = require("./yapo.cl/YapoResult")(cheerio, common);
+const YapoItem = undefined;
+const YapoScrapy = require("./yapo.cl/YapoScrapy")(cheerio, common, Mongodb, YapoItem, YapoResult);
+
 /* ******** */
+
+// Yapo inmobiliario scrap site
+( async () => {
+  await YapoScrapy.scrap();
+  console.log("Found buildings :");
+  YapoScrapy.resultClass.buildingList.forEach((item) => {
+    console.log(item.buildingDetail);
+  });
+  
+})();
+return;
 
 // Chile Propiedades
 ( async () => {
@@ -50,6 +66,7 @@ return;
   })();
 
 
+
 // TODO: Buscar en https://chilepropiedades.cl/propiedades/venta/casa/region-metropolitana(rm)/0
 // TODO: Buscar en https://www.goplaceit.com/cl/mapa?id_modalidad=1&tipo_propiedad=1%2C2&selectedTool=list#11.92/-33.45071/-70.66728
 // TODO: Buscar en https://www.vivastreet.cl/compra-casas/cl
@@ -65,7 +82,6 @@ return;
 // TODO: Buscar en http://www.enchile.cl/ ?
 // TODO: Buscar en https://fich.cl/venta/
 // TODO: Buscar en http://www.corredoresintegrados.cl/
-// TODO: Buscar en https://www.yapo.cl/
 // TODO: Buscar en http://www.remax.cl/
 // TODO: Buscar en http://www.propiedades.emol.com/
 // TODO: Buscar en https://www.procasa.cl/
