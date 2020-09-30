@@ -166,6 +166,10 @@ class Common {
         while(cachename.indexOf(".") == 0)
             cachename = cachename.replace(".","");
         
+        cachename = cachename.replace(/\?/g,"_");
+        cachename = cachename.replace(/\(/g,"_.");
+        cachename = cachename.replace(/\)/g,"._");
+        cachename = cachename.replace(/\=/g,"__");
         return cachename.replace(/\//g,"-");
     }
 
