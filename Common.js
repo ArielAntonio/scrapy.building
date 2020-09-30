@@ -170,6 +170,10 @@ class Common {
         cachename = cachename.replace(/\(/g,"_.");
         cachename = cachename.replace(/\)/g,"._");
         cachename = cachename.replace(/\=/g,"__");
+        cachename = cachename.replace(/\&/g,"..");
+        cachename = cachename.replace(/\[/g,".-");
+        cachename = cachename.replace(/\]/g,"-.");
+        cachename = cachename.replace(/\#/g,".");
         return cachename.replace(/\//g,"-");
     }
 
