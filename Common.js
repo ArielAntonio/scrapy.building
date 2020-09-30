@@ -161,7 +161,7 @@ class Common {
      */
     urlToCachename(url){
         let cachename = url.replace(":","").replace("https","").replace("http","")
-        .replace("www","").replace(/\/\//g,"");
+        .replace("www","").replace(/\/\//g,"").replace("=","_").replace("?","-");
     
         while(cachename.indexOf(".") == 0)
             cachename = cachename.replace(".","");

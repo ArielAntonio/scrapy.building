@@ -14,13 +14,14 @@ const PortalResults = require("./portal-inmobiliario/PortalResults")(cheerio, co
 const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
 /* BD Mongo */
-const USE_MONGO = true;
+const USE_MONGO = false;
 const Mongodb = {
-    enabled : USE_MONGO,
-    adapter : require("./Mongo/MongoDB")(URL_MONGODB)
+    enabled : USE_MONGO//,
+    //adapter : require("./Mongo/MongoDB")(URL_MONGODB)
 };
 
 const PortalScrapy = require("./portal-inmobiliario/PortalScrapy")(cheerio, common, Mongodb, PortalItem, PortalResults);
+
 
 const ChilePropiedadesResult = require("./chile-propiedades/ChilePropiedadesResult")(cheerio, common);
 const ChilePropiedadesItem = undefined;
@@ -31,6 +32,7 @@ const YapoItem = undefined;
 const YapoScrapy = require("./yapo.cl/YapoScrapy")(cheerio, common, Mongodb, YapoItem, YapoResult);
 
 /* ******** */
+
 
 // Yapo inmobiliario scrap site
 ( async () => {
@@ -45,15 +47,13 @@ return;
 
 // Chile Propiedades
 ( async () => {
-    await ChilePropiedadesScrapy.scrap();
-    console.log("Found buildings :");
-    ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
-      console.log(item);
-    }); 
-  }
+  await ChilePropiedadesScrapy.scrap();
+  console.log("Found buildings :");
+  ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
+    console.log(item);
+  }); 
+}
 )();
-
-return;
 
 // Portal inmobiliario scrap site
 ( async () => {

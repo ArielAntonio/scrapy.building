@@ -25,7 +25,7 @@ class YapoScrapy{
         this.URL_BASE = "https://www.yapo.cl";
         this.URL_REFERER = this.URL_BASE;
 
-        this.CODE_REGION = "15_s";
+        this.CODE_REGION = "15_s&l=0&w=1&cmn=";
         this.PARAM_REGION = "?ca=";
 
         this.REGIONS = 'region_metropolitana';
