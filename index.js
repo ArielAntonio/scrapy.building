@@ -33,41 +33,46 @@ const YapoScrapy = require("./yapo.cl/YapoScrapy")(cheerio, common, Mongodb, Yap
 
 /* ******** */
 
-
-// Yapo inmobiliario scrap site
+// TODO: Añadir config para habilitar proveedores de busqueda
 ( async () => {
-  await YapoScrapy.scrap();
-  console.log("Found buildings :");
-  YapoScrapy.resultClass.buildingList.forEach((item) => {
-    console.log(item.buildingDetail);
-  });
+  // Yapo inmobiliario scrap site
+  try{
+    await YapoScrapy.scrap();
+    console.log("Found buildings :");
+    YapoScrapy.resultClass.buildingList.forEach((item) => {
+      console.log(item.buildingDetail);
+    });
+  }catch(err){
+    console.log(err);
+  }
   
-})();
-return;
 
-// Chile Propiedades
-( async () => {
-  await ChilePropiedadesScrapy.scrap();
-  console.log("Found buildings :");
-  ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
-    console.log(item);
-  }); 
-}
-)();
-
-// Portal inmobiliario scrap site
-( async () => {
-    await PortalScrapy.scrap();
+  // Chile Propiedades
+  try{
+    await ChilePropiedadesScrapy.scrap();
+    console.log("Found buildings :");
+    ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
+      console.log(item);
+    }); 
+  }
+  catch(err){
+    console.log(err);
+  }
+  return;
+  // Portal inmobiliario scrap site
+  try{
+  await PortalScrapy.scrap();
     console.log("Found buildings :");
     PortalScrapy.resultClass.buildingList.forEach((item) => {
       console.log(item.buildingDetail);
     });
-    
-  })();
+  }
+  catch(err){
+    console.log(err);
+  }
+})();
 
 
-
-// TODO: Buscar en https://chilepropiedades.cl/propiedades/venta/casa/region-metropolitana(rm)/0
 // TODO: Buscar en https://www.goplaceit.com/cl/mapa?id_modalidad=1&tipo_propiedad=1%2C2&selectedTool=list#11.92/-33.45071/-70.66728
 // TODO: Buscar en https://www.vivastreet.cl/compra-casas/cl
 // TODO: Buscar en https://www.icasas.cl/
@@ -91,12 +96,3 @@ return;
 // TODO: Buscar en ? https://www.casasenremate.com/
 
 // Relacionado? https://www.minvu.cl/beneficios/vivienda/
-
-/*
-parseResultsSite(URL_BASE)
-.then((nextUrl) => delay(5, nextUrl))
-.then((delayedValue) => {
-    console.log("The next url (delayed) is: ", delayedValue);
-});
-
-*/

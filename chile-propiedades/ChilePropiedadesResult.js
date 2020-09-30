@@ -24,7 +24,7 @@ class ChilePropiedadesResult {
         resultSection.each((i, item) => {
             //console.log(item);
             let qItem = $(item);
-            let isFetured = qItem.find(".premium-table-item") !== undefined;
+            let isFeatured = qItem.find(".premium-table-item") !== undefined;
 
             let photoSection = qItem.find(".clp-search-image-container");
             let buildingUrl = photoSection.find("a").attr("href");
@@ -36,12 +36,13 @@ class ChilePropiedadesResult {
             let infoSectionOne = photoSection.next();
             
             //console.log(infoSectionOne.html());
-            let buildingProjectName = infoSectionOne.find(".publication-title-list").first().text().trim();
+            let ProjectTitleData = infoSectionOne.find(".publication-title-list").first().text().trim();
+            let buildingProjectName = this.GetProjectName(ProjectTitleData);
             let buildingDescription = infoSectionOne.children().eq(1).text();
             // TODO: Cleanup ID, and get type, check for erros on get
             let buildingId = infoSectionOne.children().eq(2).text().trim().split("\n")[0].split(":")[1].trim();
-            let buildingType = infoSectionOne.find(".item_subtitle").text().trim();
-            let buildingAddress = buildingProjectName;
+            let buildingType = buildingProjectPhotoDesc.split("/")[1].trim()
+            let buildingAddress = this.GetProjectAddress(ProjectTitleData);
 
             let infoSection = infoSectionOne.next();
             let priceTag = "";
@@ -57,7 +58,7 @@ class ChilePropiedadesResult {
             let agencyName = infoSection.find("img").attr("alt") || "No detectada";
             let agencyLogo = infoSection.find("img").attr("src") || "#";
             
-            let buildingProjectType = "";
+            let buildingProjectType = buildingProjectPhotoDesc.split("/")[0].trim();
             
     
             let building = {
@@ -98,12 +99,25 @@ class ChilePropiedadesResult {
         return nextLink;
     }
 
+    GetProjectName( sectionText ){
+        
+        let splitedNewLine = sectionText.split("\n");
+        let splitedProjectName = splitedNewLine[0].split(",");
+        return splitedProjectName[1].trim();
+    }
+
+    GetProjectAddress(sectionText){
+        let splitedNewLine = sectionText.split("\n");
+        let splitedProjectName = splitedNewLine[0].split(",");
+        return splitedProjectName[0].trim();
+    }
+
     GetDetailSection(sectionElement, textToFind){
         let sectionValue = "";
         let item = {};
         for(let i = 0; item !== undefined ;i++){
             item = sectionElement.eq(i);
-            console.log(item);
+            //console.log(item.text());
             if( item.length === 0){
                 item = undefined;
                 break;
