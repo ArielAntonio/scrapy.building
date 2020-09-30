@@ -14,30 +14,46 @@ const PortalResults = require("./portal-inmobiliario/PortalResults")(cheerio, co
 const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
 /* BD Mongo */
-const USE_MONGO = true;
+const USE_MONGO = false;
 const Mongodb = {
-    enabled : USE_MONGO,
-    adapter : require("./Mongo/MongoDB")(URL_MONGODB)
+    enabled : USE_MONGO//,
+    //adapter : require("./Mongo/MongoDB")(URL_MONGODB)
 };
 
 const PortalScrapy = require("./portal-inmobiliario/PortalScrapy")(cheerio, common, Mongodb, PortalItem, PortalResults);
 
+
 const ChilePropiedadesResult = require("./chile-propiedades/ChilePropiedadesResult")(cheerio, common);
 const ChilePropiedadesItem = undefined;
 const ChilePropiedadesScrapy = require("./chile-propiedades/ChilePropiedadesScrapy")(cheerio, common, Mongodb, ChilePropiedadesItem, ChilePropiedadesResult);
+
+const YapoResult = require("./yapo.cl/YapoResult")(cheerio, common);
+const YapoItem = undefined;
+const YapoScrapy = require("./yapo.cl/YapoScrapy")(cheerio, common, Mongodb, YapoItem, YapoResult);
+
 /* ******** */
+
+
+// Yapo inmobiliario scrap site
+( async () => {
+  await YapoScrapy.scrap();
+  console.log("Found buildings :");
+  YapoScrapy.resultClass.buildingList.forEach((item) => {
+    console.log(item.buildingDetail);
+  });
+  
+})();
+return;
 
 // Chile Propiedades
 ( async () => {
-    await ChilePropiedadesScrapy.scrap();
-    console.log("Found buildings :");
-    ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
-      console.log(item);
-    }); 
-  }
+  await ChilePropiedadesScrapy.scrap();
+  console.log("Found buildings :");
+  ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
+    console.log(item);
+  }); 
+}
 )();
-
-return;
 
 // Portal inmobiliario scrap site
 ( async () => {
@@ -48,6 +64,7 @@ return;
     });
     
   })();
+
 
 
 // TODO: Buscar en https://chilepropiedades.cl/propiedades/venta/casa/region-metropolitana(rm)/0
@@ -65,7 +82,6 @@ return;
 // TODO: Buscar en http://www.enchile.cl/ ?
 // TODO: Buscar en https://fich.cl/venta/
 // TODO: Buscar en http://www.corredoresintegrados.cl/
-// TODO: Buscar en https://www.yapo.cl/
 // TODO: Buscar en http://www.remax.cl/
 // TODO: Buscar en http://www.propiedades.emol.com/
 // TODO: Buscar en https://www.procasa.cl/
