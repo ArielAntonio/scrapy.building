@@ -1,26 +1,35 @@
 module.exports = (URLMONGODB) => {return new MongoDB(URLMONGODB);}; 
 
+const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
+const { db } = require('../models/building');
 const Building = require('../models/building')
 
-const db = 'building';
-const url = 'mongodb://localhost:27017/scrapy';
+
+const dbName = 'Scrapy';
+const dbCollection = 'building';
+const url = 'mongodb://localhost:27017';
 
 class MongoDB{
     urlMongo;
     Modelbuilding;
+    client;
 
     constructor(URLMONGODB){
-        this.urlMongo = URLMONGODB || "mongodb://localhost:27017/scrapy";
-        this.connect();
-        this.open();
+        this.urlMongo = URLMONGODB || url;
     }
 
+    
+
     connect(){
-        mongoose.connect(this.urlMongo,  {keepalive:true, useUnifiedTopology: true, useNewUrlParser: true}).then(() => {
+        this.client = new MongoClient(url, {useUnifiedTopology: true});
+        this.client.connect();
+        return this.client.db(dbName);
+
+        /*mongoose.connect(this.urlMongo,  {keepalive:true, useUnifiedTopology: true, useNewUrlParser: true}).then(() => {
         console.log("La conexión OK")
         })
-        .catch(err => console.log(err));
+        .catch(err => console.log(err));*/
     }
 
     disconnect(){
@@ -59,11 +68,17 @@ class MongoDB{
 
     SaveBuilding(building){
         try{
+            db = await this.connect();
             var building = this.ParserBuilding(building);
-            building.save(function (err, build) {
-                if (err) return console.error(err);
-                console.log("saved collection.");
+            await db.collection(dbCollection).insertOne({
+                building
             });
+
+            //var building = this.ParserBuilding(building);
+            //building.save(function (err, build) {
+            //    if (err) return console.error(err);
+            //    console.log("saved collection.");
+            //});
             
         }catch(error){
             //mensaje error

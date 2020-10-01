@@ -28,6 +28,7 @@ class YapoResult {
             
             let priceType = isFetured.split(" ")[0];
             let priceValue = isFetured.split(" ")[1];
+            let priceTag = "";
             
             let buildingProjectName = qItem.find(".thumbs_subject").children().eq(0).text().trim();
             let buildingUrl = qItem.find("a").attr("href");
@@ -41,62 +42,38 @@ class YapoResult {
             let buildingRooms = this.GetRooms(detailInfoSection,$);
             let buildingBathRooms = this.GetBathrooms(detailInfoSection,$);
 
+            /* Modificar */
+            let agencyName = "No detectada";
+            let agencyLogo =  "#";
 
-
-            // let photoSection = qItem.find(".clp-search-image-container");
-            // //let buildingUrl = photoSection.find("a").attr("href");
-            // let buildingUrlRaw = buildingUrl;
-            // let buildingProjectPhoto = photoSection.find("img").attr("src");
-            // let buildingProjectPhotoDesc = photoSection.find("img").attr("alt");
-            // let publicationDate = photoSection.last().text();
-            // //console.log(photoSection.html());
-            // let infoSectionOne = photoSection.next();
-            
-            // //console.log(infoSectionOne.html());
-            // //let buildingProjectName = infoSectionOne.find(".publication-title-list").first().text().trim();
-            
-            // let buildingDescription = infoSectionOne.children().eq(1).text();
-            // // TODO: Cleanup ID, and get type, check for erros on get
-            // //let buildingId = infoSectionOne.children().eq(2).text().trim().split("\n")[0].split(":")[1].trim();
-            // //let buildingType = infoSectionOne.find(".item_subtitle").text().trim();
-            // //let buildingAddress = buildingProjectName;
-
-            // let infoSection = infoSectionOne.next();
-            // let priceTag = "";
-            // //let priceType = infoSection.find(".clp-value-container").last().text().trim();
-            // //let priceValue = infoSection.find(".clp-value-container").first().text().trim().replace(/\./g,"");
-            // // TODO buscar texto de contenido para detectar diferencias en detalle (a veces 2, 3 o 4)
-            // let detailInfoSection = infoSection.find("small");
-            // let buildingSurface = this.GetSurface(detailInfoSection);
-            // //let buildingTotalSurface = this.GetTotalSurface(detailInfoSection);
-            // //let buildingRooms = this.GetRooms(detailInfoSection);
-            // //let buildingBathRooms = this.GetBathrooms(detailInfoSection);
-
-            // let agencyName = infoSection.find("img").attr("alt") || "No detectada";
-            // let agencyLogo = infoSection.find("img").attr("src") || "#";
+            let buildingUrlRaw = buildingUrl;
+            let buildingType = "";// infoSectionOne.find(".item_subtitle").text().trim();
+            let buildingAddress = buildingProjectName;
             
             let buildingProjectType = "";
-            
+            let buildingProjectPhoto = "";// photoSection.find("img").attr("src");
+            let buildingProjectPhotoDesc = ""; // photoSection.find("img").attr("alt");
+
     
             let building = {
-                buildingId : buildingId,
-                buildingProjectType : buildingProjectType,
-                buildingProjectPhoto : buildingProjectPhoto,
-                buildingProjectPhotoDesc : buildingProjectPhotoDesc,
-                priceTag : priceTag,
-                priceType : priceType,
-                priceValue : priceValue,
-                buildingSurface : buildingSurface,
-                buildingTotalSurface : buildingTotalSurface,
-                buildingRooms : buildingRooms,
-                buildingBathRooms : buildingBathRooms,
-                buildingType : buildingType,
-                buildingAddress : buildingAddress,
-                buildingProjectName : buildingProjectName,
-                agencyName : agencyName,
-                agencyLogo : agencyLogo,
-                buildingUrlRaw : buildingUrlRaw,
-                buildingUrl : buildingUrl,
+                buildingId : buildingId,//
+                buildingProjectType : buildingProjectType,//
+                buildingProjectPhoto : buildingProjectPhoto,//
+                buildingProjectPhotoDesc : buildingProjectPhotoDesc,//
+                priceTag : priceTag,//
+                priceType : priceType,//
+                priceValue : priceValue,//
+                buildingSurface : buildingSurface,//
+                buildingTotalSurface : buildingTotalSurface,//
+                buildingRooms : buildingRooms,//
+                buildingBathRooms : buildingBathRooms,//
+                buildingType : buildingType,//
+                buildingAddress : buildingAddress,//
+                buildingProjectName : buildingProjectName,//
+                agencyName : agencyName,//
+                agencyLogo : agencyLogo,//
+                buildingUrlRaw : buildingUrlRaw,//
+                buildingUrl : buildingUrl,//
                 buildingDetail : {}
             };
     
@@ -135,11 +112,13 @@ class YapoResult {
         let ClassToFind = "fal fa-expand icons__element-icon";
         let listsection = sectionElement.find('.icons__element');
         let listDetail = this.GetDetailSection(listsection, ClassToFind, $);
-        listDetail.each((i,items)=>{
-            let Yapoitems = $(items);
-            if(Yapoitems.text()!='/')
-                GetAllSurface.push(Yapoitems.text());
-        });
+        if(listDetail){
+            listDetail.each((i,items)=>{
+                let Yapoitems = $(items);
+                if(Yapoitems.text()!='/')
+                    GetAllSurface.push(Yapoitems.text());
+            });
+        };
         return GetAllSurface;
     }
 
@@ -149,12 +128,15 @@ class YapoResult {
         let ClassToFind = "fal fa-bed icons__element-icon";
         let listsection = sectionElement.find('.icons__element');
         let listDetail = this.GetDetailSection(listsection, ClassToFind, $);
-        listDetail.each((i,items)=>{
-            let Yapoitems = $(items);
-            GetRooms = Yapoitems.text();
-        });
-        GetRooms= GetRooms.replace(' ',"")
-        return GetRooms.replace('\n',"");
+        if(listDetail){
+            listDetail.each((i,items)=>{
+                let Yapoitems = $(items);
+                GetRooms = Yapoitems.text();
+            });
+            GetRooms= GetRooms.replace(" ","")
+            GetRooms= GetRooms.replace("\n","")
+        };
+        return GetRooms;
     }
 
     GetBathrooms(sectionElement, $)
@@ -163,12 +145,14 @@ class YapoResult {
         let ClassToFind = "fal fa-bath icons__element-icon";
         let listsection = sectionElement.find('.icons__element');
         let listDetail = this.GetDetailSection(listsection, ClassToFind, $);
-        listDetail.each((i,items)=>{
-            let Yapoitems = $(items);
-            TextBathrooms= Yapoitems.text();
-        });
-        TextBathrooms = TextBathrooms.replace(' ',"");
-        TextBathrooms = TextBathrooms.replace(/\n/g,"");
+        if(listDetail){
+            listDetail.each((i,items)=>{
+                let Yapoitems = $(items);
+                TextBathrooms= Yapoitems.text();
+            });
+            TextBathrooms = TextBathrooms.replace(" ","");
+            TextBathrooms = TextBathrooms.replace(/\n/g,"");
+        };
         return TextBathrooms;
     }
 

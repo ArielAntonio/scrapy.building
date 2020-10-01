@@ -13,6 +13,8 @@ class YapoScrapy{
     common;
     cheerio;
     dbModule;
+    itemClass;
+    resultClass;
 
     constructor(cheerioModule, commonModule, dbModule, itemClass, resultClass){
         this.common = commonModule;
@@ -50,7 +52,7 @@ class YapoScrapy{
             
         }
         // TODO: Read the item content
-        return;
+        //return;
         
         console.log("Se ha encontrado un total de: %s elementos", this.resultClass.buildingList.length);
         // Get from portal inmobiliario items detail
