@@ -7,17 +7,18 @@ const fetch = require('node-fetch');
 const CACHE_FOLDER = "cache";
 const URL_REFERER = "";
 const DEFAULT_WAITING_TIME = 10;
-const URL_MONGODB = "mongodb://localhost:27017/scrapy"
+const URL_MONGODB = "mongodb://10.0.3.105:27017"
 
 const common = require("./Common")(fs, fetch, CACHE_FOLDER, URL_REFERER, DEFAULT_WAITING_TIME, false);
 const PortalResults = require("./portal-inmobiliario/PortalResults")(cheerio, common);
 const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
 /* BD Mongo */
+// TODO: Use just One Connection Pool, and closed at the end
 const USE_MONGO = true;
 const Mongodb = {
-    enabled : USE_MONGO//,
-    //adapter : require("./Mongo/MongoDB")(URL_MONGODB)
+    enabled : USE_MONGO,
+    adapter : require("./Mongo/MongoDB")(URL_MONGODB)
 };
 
 const PortalScrapy = require("./portal-inmobiliario/PortalScrapy")(cheerio, common, Mongodb, PortalItem, PortalResults);
@@ -35,6 +36,8 @@ const YapoScrapy = require("./yapo.cl/YapoScrapy")(cheerio, common, Mongodb, Yap
 
 // TODO: Añadir config para habilitar proveedores de busqueda
 ( async () => {
+    // TODO: Open DB connection Pool
+
   // Yapo inmobiliario scrap site
   try{
     await YapoScrapy.scrap();
@@ -45,14 +48,14 @@ const YapoScrapy = require("./yapo.cl/YapoScrapy")(cheerio, common, Mongodb, Yap
   }catch(err){
     console.log(err);
   }
-  return;
+
 
   // Chile Propiedades
   try{
     await ChilePropiedadesScrapy.scrap();
     console.log("Found buildings :");
     ChilePropiedadesScrapy.resultClass.buildingList.forEach((item) => {
-      console.log(item);
+      //console.log(item);
     }); 
   }
   catch(err){
@@ -70,6 +73,9 @@ const YapoScrapy = require("./yapo.cl/YapoScrapy")(cheerio, common, Mongodb, Yap
   catch(err){
     console.log(err);
   }
+
+
+  // TODO: Close DB Connection Pool
 })();
 
 
