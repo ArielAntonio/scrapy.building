@@ -17,14 +17,22 @@ class MongoDB{
 
     constructor(URLMONGODB){
         this.urlMongo = URLMONGODB || url;
+        //this.client = MongoClient;
+        this.client = new MongoClient(this.urlMongo, { useUnifiedTopology: true });
     }
 
     
 
-    connect(){
-        this.client = new MongoClient(url, {useUnifiedTopology: true});
-        this.client.connect();
-        return this.client.db(dbName);
+    async connect(){
+        // Due a bug the connection has to be created every time it gets disconnect
+        // https://jira.mongodb.org/browse/NODE-2544
+        // Based on this, maybe the db is the previous cache db, so that is closed
+        // http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html
+        //this.client = new MongoClient(this.urlMongo, { useUnifiedTopology: true });
+        if(! this.client.isConnected())
+            await this.client.connect();
+
+        return await this.client.db(dbName, {returnNonCachedInstance : true});
 
         /*mongoose.connect(this.urlMongo,  {keepalive:true, useUnifiedTopology: true, useNewUrlParser: true}).then(() => {
         console.log("La conexión OK")
@@ -66,26 +74,26 @@ class MongoDB{
         return Modelbuilding; 
     }
 
-    SaveBuilding(building){
+    async SaveBuilding(building){
         try{
-            db = await this.connect();
-            var building = this.ParserBuilding(building);
-            await db.collection(dbCollection).insertOne({
-                building
-            });
-
-            //var building = this.ParserBuilding(building);
-            //building.save(function (err, build) {
-            //    if (err) return console.error(err);
-            //    console.log("saved collection.");
-            //});
             
+            let db = await this.connect();
+            var modelBuilding = this.ParserBuilding(building);
+
+            // Insert only if it is new (TODO: check updates? )
+            // console.log(await db.collection(dbCollection).findOne({Id : modelBuilding.Id}));
+            if(await db.collection(dbCollection).findOne({Id : modelBuilding.Id}) === null) {
+                await db.collection(dbCollection).insertOne(modelBuilding);
+            }
+            await this.client.close();
+            return 'OK';
+
         }catch(error){
             //mensaje error
-            return 'error'
+            await this.client.close();
+            return error;
         }
-        //this.disconnect();
-        return 'OK'
+
     }
 
 

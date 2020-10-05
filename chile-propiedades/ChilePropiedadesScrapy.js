@@ -62,7 +62,7 @@ class ChilePropiedadesScrapy {
                 // GET THE RESULT PAGE
                 for(let i = 1; nextUrl !== undefined; i++){
                     // Get only on UF values
-                    nextUrl = `${nextUrl}?valueUnit=3`
+                    nextUrl = `${nextUrl}?valueUnit=3`;
                     if( i % this.PAGE_INFO_CHUNK == 1)
                         console.log("-- -- pages :", i);
                     nextUrl = await this.getResult(nextUrl);
@@ -70,10 +70,17 @@ class ChilePropiedadesScrapy {
                     break;
                 }
                 // TODO: REMOVE BREAK
-                break
+                break;
             }
         }
         // TODO: Read the item content
+        if(this.dbModule.enabled){
+            console.log("Save to DB")
+            /// TODO: validar si exite registro en la BD
+            for(var itemData in this.resultClass.buildingList){
+                 console.log(await this.dbModule.adapter.SaveBuilding(this.resultClass.buildingList[itemData]));
+            }
+        }
         return;
         
         console.log("Se ha encontrado un total de: %s elementos", this.resultClass.buildingList.length);
