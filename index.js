@@ -15,7 +15,7 @@ const PortalItem = require("./portal-inmobiliario/PortalItem")(cheerio, common);
 
 /* BD Mongo */
 // TODO: Use just One Connection Pool, and closed at the end
-const USE_MONGO = true;
+const USE_MONGO = false;
 const Mongodb = {
     enabled : USE_MONGO,
     adapter : require("./Mongo/MongoDB")(URL_MONGODB)
@@ -25,7 +25,7 @@ const PortalScrapy = require("./portal-inmobiliario/PortalScrapy")(cheerio, comm
 
 
 const ChilePropiedadesResult = require("./chile-propiedades/ChilePropiedadesResult")(cheerio, common);
-const ChilePropiedadesItem = undefined;
+const ChilePropiedadesItem = require("./chile-propiedades/ChilePropiedadesItem")(cheerio, common);
 const ChilePropiedadesScrapy = require("./chile-propiedades/ChilePropiedadesScrapy")(cheerio, common, Mongodb, ChilePropiedadesItem, ChilePropiedadesResult);
 
 const YapoResult = require("./yapo.cl/YapoResult")(cheerio, common);
