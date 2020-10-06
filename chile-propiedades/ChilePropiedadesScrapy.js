@@ -21,7 +21,7 @@ class ChilePropiedadesScrapy {
     DEFAULT_PAGE_SIZE;
 
     /**
-     * Init the Portal Inmobiliario Main Scrapy class. 
+     * Init the Chile Propiedades Main Scrapy class.
      *
      *
      * @param {Object}          cheerioModule           Cheerio Module, required.
@@ -41,7 +41,7 @@ class ChilePropiedadesScrapy {
         this.itemClass = itemClass;
         this.resultClass = resultClass;
 
-        this.URL_BASE = "https://chilepropiedades.cl/propiedades";
+        this.URL_BASE = "https://chilepropiedades.cl";
         this.URL_REFERER = this.URL_BASE;
 
         this.OPERATIONS = ['venta'];
@@ -58,7 +58,7 @@ class ChilePropiedadesScrapy {
             console.log("Get operation: ", this.OPERATIONS[operation])
             for( let category in this.CATEGORIES){
                 console.log("-- Get category: ", this.CATEGORIES[category])
-                let nextUrl = `${this.URL_BASE}/${this.OPERATIONS[operation]}/${this.CATEGORIES[category]}/${this.REGIONS}/0`;
+                let nextUrl = `${this.URL_BASE}/propiedades/${this.OPERATIONS[operation]}/${this.CATEGORIES[category]}/${this.REGIONS}/0`;
                 // GET THE RESULT PAGE
                 for(let i = 1; nextUrl !== undefined; i++){
                     // Get only on UF values
@@ -73,16 +73,14 @@ class ChilePropiedadesScrapy {
                 break;
             }
         }
-        // TODO: Read the item content
         if(this.dbModule.enabled){
             console.log("Save to DB")
-            /// TODO: validar si exite registro en la BD
             for(var itemData in this.resultClass.buildingList){
                  console.log(await this.dbModule.adapter.SaveBuilding(this.resultClass.buildingList[itemData]));
             }
         }
-        return;
-        
+
+
         console.log("Se ha encontrado un total de: %s elementos", this.resultClass.buildingList.length);
         // Get from portal inmobiliario items detail
         for(let i = 0, l = this.resultClass.buildingList.length; i < l; i++){
@@ -109,7 +107,7 @@ class ChilePropiedadesScrapy {
 
     async getItem(currentBuilding){
         let waitingTime = this.common.getRandomTime(this.common.DEFAULT_WAITING_TIME);
-        let pageContent = await this.common.getPage(currentBuilding.buildingUrl);
+        let pageContent = await this.common.getPage(`${this.URL_BASE}${currentBuilding.buildingUrl}`);
         let buildingResult = await this.itemClass.ReadEntry(pageContent);
         await this.common.delay(waitingTime);
         return buildingResult;
